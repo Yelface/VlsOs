@@ -3,6 +3,7 @@
 #include "types.h"
 #include "net.h"
 #include "socket.h"
+#include "http.h"
 
 /* Network commands for shell */
 
@@ -148,5 +149,26 @@ int cmd_route(int argc, char** argv) {
 	(void) argv;
 
 	vga_write_string("Routing table (not yet implemented)\n");
+	return 0;
+}
+
+/* HTTP Server command */
+int cmd_http(int argc, char** argv) {
+	if (argc < 2) {
+		vga_write_string("Usage: http start|stop|status\n");
+		return 1;
+	}
+
+	if (strcmp(argv[1], "start") == 0) {
+		http_server_start();
+	} else if (strcmp(argv[1], "stop") == 0) {
+		http_server_stop();
+	} else if (strcmp(argv[1], "status") == 0) {
+		vga_write_string("HTTP server status (not yet implemented)\n");
+	} else {
+		vga_write_string("Unknown http command\n");
+		return 1;
+	}
+
 	return 0;
 }
