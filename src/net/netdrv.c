@@ -45,6 +45,12 @@ void rtl8139_init(void) {
 	/* Set gateway: 192.168.1.1 */
 	net_set_ipaddr_bytes(&net_iface->gateway, 192, 168, 1, 1);
 
+	/* Set DNS servers */
+	/* Primary DNS: Google Public DNS (8.8.8.8) */
+	net_set_ipaddr_bytes(&net_iface->dns1, 8, 8, 8, 8);
+	/* Secondary DNS: Google Public DNS (8.8.4.4) */
+	net_set_ipaddr_bytes(&net_iface->dns2, 8, 8, 4, 4);
+
 	/* Mark interface as running */
 	net_iface->flags |= NET_FLAG_RUNNING;
 

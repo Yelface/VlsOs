@@ -56,6 +56,21 @@ int cmd_ifconfig(int argc, char** argv) {
 	}
 	vga_write_string("\n");
 
+	/* Print DNS servers */
+	vga_write_string("      dns1 ");
+	for (int i = 0; i < 4; i++) {
+		itoa(iface->dns1.octets[i], buf, 10);
+		vga_write_string(buf);
+		if (i < 3) vga_write_char('.');
+	}
+	vga_write_string(" dns2 ");
+	for (int i = 0; i < 4; i++) {
+		itoa(iface->dns2.octets[i], buf, 10);
+		vga_write_string(buf);
+		if (i < 3) vga_write_char('.');
+	}
+	vga_write_string("\n");
+
 	return 0;
 }
 

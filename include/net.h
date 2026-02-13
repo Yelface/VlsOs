@@ -116,6 +116,8 @@ typedef struct {
 	ipv4_addr_t ip_addr;
 	ipv4_addr_t netmask;
 	ipv4_addr_t gateway;
+	ipv4_addr_t dns1;           /* Primary DNS server */
+	ipv4_addr_t dns2;           /* Secondary DNS server */
 	uint32_t mtu;
 	uint32_t flags;
 	void (*send)(uint8_t* data, uint16_t len);
