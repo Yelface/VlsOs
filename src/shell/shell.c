@@ -2,6 +2,7 @@
 #include "string.h"
 #include "types.h"
 #include "shell.h"
+#include "net.h"
 
 /* Interactive command shell for VlsOs */
 
@@ -18,6 +19,13 @@ struct command {
 /* Built-in commands */
 static int cmd_help(int argc, char** argv);
 static int cmd_echo(int argc, char** argv);
+
+/* Network commands (external) */
+extern int cmd_ifconfig(int argc, char** argv);
+extern int cmd_ping(int argc, char** argv);
+extern int cmd_netstat(int argc, char** argv);
+extern int cmd_arp(int argc, char** argv);
+extern int cmd_route(int argc, char** argv);
 static int cmd_clear(int argc, char** argv);
 static int cmd_uptime(int argc, char** argv);
 static int cmd_exit(int argc, char** argv);
@@ -25,13 +33,18 @@ static int cmd_ls(int argc, char** argv);
 
 /* Command table */
 static struct command commands[] = {
-	{"help",   cmd_help,   "Display available commands"},
-	{"echo",   cmd_echo,   "Echo arguments to display"},
-	{"clear",  cmd_clear,  "Clear the screen"},
-	{"uptime", cmd_uptime, "Show system uptime"},
-	{"ls",     cmd_ls,     "List files (simulation)"},
-	{"exit",   cmd_exit,   "Exit the shell"},
-	{NULL,     NULL,       NULL}
+	{"help",     cmd_help,      "Display available commands"},
+	{"echo",     cmd_echo,      "Echo arguments to display"},
+	{"clear",    cmd_clear,     "Clear the screen"},
+	{"uptime",   cmd_uptime,    "Show system uptime"},
+	{"ls",       cmd_ls,        "List files (simulation)"},
+	{"exit",     cmd_exit,      "Exit the shell"},
+	{"ifconfig", cmd_ifconfig,  "Show network interface configuration"},
+	{"ping",     cmd_ping,      "Send ICMP echo request (ping)"},
+	{"netstat",  cmd_netstat,   "Show network connections"},
+	{"arp",      cmd_arp,       "Show ARP cache"},
+	{"route",    cmd_route,     "Show routing table"},
+	{NULL,       NULL,          NULL}
 };
 
 /* Command: help */
