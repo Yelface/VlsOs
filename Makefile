@@ -81,18 +81,25 @@ $(KERNEL): $(BUILD_DIR)/multiboot.o $(BUILD_DIR)/interrupts.o \
            $(BUILD_DIR)/netdrv.o $(BUILD_DIR)/socket.o $(BUILD_DIR)/netcmd.o
 	$(LD) $(LDFLAGS) -o $@ $^
 
-# Build ISO image
+# Build ISO image (VirtualBox-compatible with BIOS boot)
 iso: $(KERNEL)
 	mkdir -p $(GRUB_DIR)
 	cp $(KERNEL) $(BOOT_DIR)/vlsos.bin
 	echo 'set default=0' > $(GRUB_DIR)/grub.cfg
-	echo 'set timeout=3' >> $(GRUB_DIR)/grub.cfg
+	echo 'set timeout=5' >> $(GRUB_DIR)/grub.cfg
 	echo '' >> $(GRUB_DIR)/grub.cfg
 	echo 'menuentry "VlsOs" {' >> $(GRUB_DIR)/grub.cfg
 	echo '  multiboot /boot/vlsos.bin' >> $(GRUB_DIR)/grub.cfg
 	echo '  boot' >> $(GRUB_DIR)/grub.cfg
 	echo '}' >> $(GRUB_DIR)/grub.cfg
-	grub-mkrescue -o $(ISO) $(ISO_DIR) 2>/dev/null || true
+	grub-mkrescue --compress=xz -o $(ISO) $(ISO_DIR) 2>&1 || { \
+		echo "ERROR: Failed to create ISO with grub-mkrescue"; \
+		exit 1; \
+	}
+	@if [ -f $(ISO) ]; then \
+		echo "✓ ISO image created: $(ISO)"; \
+		ls -lh $(ISO); \
+	fi
 
 # Run in QEMU
 run: iso
