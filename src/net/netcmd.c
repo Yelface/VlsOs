@@ -5,6 +5,7 @@
 #include "socket.h"
 #include "http.h"
 #include "dns.h"
+#include "dhcp.h"
 
 /* Network commands for shell */
 
@@ -189,6 +190,27 @@ int cmd_dns(int argc, char** argv) {
 		vga_write_string("DNS server status (not yet implemented)\n");
 	} else {
 		vga_write_string("Unknown dns command\n");
+		return 1;
+	}
+
+	return 0;
+}
+
+/* DHCP Server command */
+int cmd_dhcp(int argc, char** argv) {
+	if (argc < 2) {
+		vga_write_string("Usage: dhcp start|stop|status\n");
+		return 1;
+	}
+
+	if (strcmp(argv[1], "start") == 0) {
+		dhcp_start();
+	} else if (strcmp(argv[1], "stop") == 0) {
+		dhcp_stop();
+	} else if (strcmp(argv[1], "status") == 0) {
+		vga_write_string("DHCP server status (not yet implemented)\n");
+	} else {
+		vga_write_string("Unknown dhcp command\n");
 		return 1;
 	}
 
