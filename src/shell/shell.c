@@ -3,6 +3,7 @@
 #include "types.h"
 #include "shell.h"
 #include "net.h"
+#include "search.h"
 
 /* Interactive command shell for VlsOs */
 
@@ -31,6 +32,7 @@ static int cmd_clear(int argc, char** argv);
 static int cmd_uptime(int argc, char** argv);
 static int cmd_exit(int argc, char** argv);
 static int cmd_ls(int argc, char** argv);
+static int cmd_search(int argc, char** argv);
 
 /* Command table */
 static struct command commands[] = {
