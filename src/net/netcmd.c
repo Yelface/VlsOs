@@ -6,6 +6,7 @@
 #include "http.h"
 #include "dns.h"
 #include "dhcp.h"
+#include "http_client.h"
 
 /* Network commands for shell */
 
@@ -212,6 +213,88 @@ int cmd_dhcp(int argc, char** argv) {
 	} else {
 		vga_write_string("Unknown dhcp command\n");
 		return 1;
+	}
+
+	return 0;
+}
+/* HTTP Client - wget command */
+int cmd_wget(int argc, char** argv) {
+	if (argc < 2) {
+		vga_write_string("Usage: wget <url>\n");
+		vga_write_string("Example: wget http://192.168.1.100/\n");
+		return 1;
+	}
+
+	const char* url = argv[1];
+	
+	/* Simple URL parser: http://host:port/path */
+	const char* host_start = url;
+	if (strncmp(url, "http://", 7) == 0) {
+		host_start = url + 7;
+	} else {
+		vga_write_string("Only http:// URLs supported\n");
+		return 1;
+	}
+
+	/* Extract host and path */
+	char host[64] = {0};
+	uint16_t port = 80;
+	const char* path = "/";
+	int host_len = 0;
+
+	/* Copy host until : or / */
+	int i = 0;
+	while (host_start[i] && host_start[i] != ':' && host_start[i] != '/' && i < 63) {
+		host[i] = host_start[i];
+		i++;
+		host_len++;
+	}
+	host[host_len] = 0;
+
+	/* Check for port */
+	if (host_start[i] == ':') {
+		i++;
+		char port_str[6] = {0};
+		int p_idx = 0;
+		while (host_start[i] && host_start[i] >= '0' && host_start[i] <= '9' && p_idx < 5) {
+			port_str[p_idx++] = host_start[i++];
+		}
+		port_str[p_idx] = 0;
+		if (p_idx > 0) port = atoi(port_str);
+	}
+
+	/* Rest is path */
+	if (host_start[i] == '/') {
+		path = &host_start[i];
+	}
+
+	vga_write_string("Fetching ");
+	vga_write_string(host);
+	vga_write_string(":");
+	char portstr[6]; itoa(port, portstr, 10);
+	vga_write_string(portstr);
+	vga_write_string(path);
+	vga_write_string(" ...\n");
+
+	/* Make HTTP request */
+	http_response_t resp;
+	if (http_client_get(host, port, path, &resp) < 0) {
+		return 1;
+	}
+
+	vga_write_string("Status: ");
+	char status_str[4]; itoa(resp.status_code, status_str, 10);
+	vga_write_string(status_str);
+	vga_write_string("\n");
+
+	if (resp.body) {
+		vga_write_string("Content:\n");
+		vga_write_string("---\n");
+		for (int j = 0; j < resp.body_len; j++) {
+			vga_write_char(resp.body[j]);
+		}
+		vga_write_string("\n---\n");
+		http_client_free(&resp);
 	}
 
 	return 0;

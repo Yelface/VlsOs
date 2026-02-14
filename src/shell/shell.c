@@ -30,6 +30,7 @@ extern int cmd_route(int argc, char** argv);
 extern int cmd_http(int argc, char** argv);
 extern int cmd_dns(int argc, char** argv);
 extern int cmd_dhcp(int argc, char** argv);
+extern int cmd_wget(int argc, char** argv);
 static int cmd_clear(int argc, char** argv);
 static int cmd_uptime(int argc, char** argv);
 static int cmd_exit(int argc, char** argv);
@@ -52,6 +53,7 @@ static struct command commands[] = {
 	{"http",     cmd_http,      "HTTP server control (start|stop|status)"},
 	{"dns",      cmd_dns,       "DNS server control (start|stop|status)"},
 	{"dhcp",     cmd_dhcp,      "DHCP server control (start|stop|status)"},
+	{"wget",     cmd_wget,      "HTTP client (fetch and display web pages)"},
 	{NULL,       NULL,          NULL}
 };
 
