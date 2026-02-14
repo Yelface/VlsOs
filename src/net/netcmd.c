@@ -4,6 +4,7 @@
 #include "net.h"
 #include "socket.h"
 #include "http.h"
+#include "dns.h"
 
 /* Network commands for shell */
 
@@ -167,6 +168,27 @@ int cmd_http(int argc, char** argv) {
 		vga_write_string("HTTP server status (not yet implemented)\n");
 	} else {
 		vga_write_string("Unknown http command\n");
+		return 1;
+	}
+
+	return 0;
+}
+
+/* DNS Server command */
+int cmd_dns(int argc, char** argv) {
+	if (argc < 2) {
+		vga_write_string("Usage: dns start|stop|status\n");
+		return 1;
+	}
+
+	if (strcmp(argv[1], "start") == 0) {
+		dns_start();
+	} else if (strcmp(argv[1], "stop") == 0) {
+		dns_stop();
+	} else if (strcmp(argv[1], "status") == 0) {
+		vga_write_string("DNS server status (not yet implemented)\n");
+	} else {
+		vga_write_string("Unknown dns command\n");
 		return 1;
 	}
 

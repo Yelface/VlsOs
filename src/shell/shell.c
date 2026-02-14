@@ -28,6 +28,7 @@ extern int cmd_netstat(int argc, char** argv);
 extern int cmd_arp(int argc, char** argv);
 extern int cmd_route(int argc, char** argv);
 extern int cmd_http(int argc, char** argv);
+extern int cmd_dns(int argc, char** argv);
 static int cmd_clear(int argc, char** argv);
 static int cmd_uptime(int argc, char** argv);
 static int cmd_exit(int argc, char** argv);
@@ -48,6 +49,7 @@ static struct command commands[] = {
 	{"arp",      cmd_arp,       "Show ARP cache"},
 	{"route",    cmd_route,     "Show routing table"},
 	{"http",     cmd_http,      "HTTP server control (start|stop|status)"},
+	{"dns",      cmd_dns,       "DNS server control (start|stop|status)"},
 	{NULL,       NULL,          NULL}
 };
 

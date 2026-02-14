@@ -1,5 +1,6 @@
 #include "dns.h"
 #include "socket.h"
+#include "memory.h"
 #include "string.h"
 #include "drivers.h"
 #include "net.h"
