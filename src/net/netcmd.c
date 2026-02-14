@@ -7,6 +7,7 @@
 #include "dns.h"
 #include "dhcp.h"
 #include "http_client.h"
+#include "ui.h"
 
 /* Network commands for shell */
 
@@ -295,6 +296,32 @@ int cmd_wget(int argc, char** argv) {
 		}
 		vga_write_string("\n---\n");
 		http_client_free(&resp);
+	}
+
+	return 0;
+}
+
+/* UI command */
+int cmd_ui(int argc, char** argv) {
+	if (argc < 2) {
+		vga_write_string("Usage: ui on|off|status\n");
+		return 1;
+	}
+
+	if (strcmp(argv[1], "on") == 0) {
+		ui_enable();
+		ui_update_header();
+		ui_print_content("Enhanced UI enabled");
+		ui_draw_footer("vlsos> ");
+	} else if (strcmp(argv[1], "off") == 0) {
+		ui_disable();
+		vga_write_string("UI disabled\n");
+	} else if (strcmp(argv[1], "status") == 0) {
+		vga_write_string("UI status: ");
+		vga_write_string(g_ui_state.enabled ? "ON\n" : "OFF\n");
+	} else {
+		vga_write_string("Unknown ui command\n");
+		return 1;
 	}
 
 	return 0;

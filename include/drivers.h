@@ -9,6 +9,7 @@ void vga_write_char(char);
 void vga_clear_screen(void);
 void vga_set_color(uint8_t foreground, uint8_t background);
 void vga_write_string(const char* str);
+void vga_set_position(int row, int col);
 int vga_get_cursor_x(void);
 int vga_get_cursor_y(void);
 

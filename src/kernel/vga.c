@@ -130,3 +130,12 @@ int vga_get_cursor_x(void) {
 int vga_get_cursor_y(void) {
 	return cursor_y;
 }
+
+/* Set cursor position */
+void vga_set_position(int row, int col) {
+	if (row >= 0 && row < VGA_HEIGHT && col >= 0 && col < VGA_WIDTH) {
+		cursor_y = row;
+		cursor_x = col;
+		vga_update_cursor();
+	}
+}
