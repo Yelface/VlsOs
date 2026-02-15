@@ -1,5 +1,6 @@
 #include "kernel.h"
 #include "drivers.h"
+#include "disk.h"
 #include "memory.h"
 #include "types.h"
 #include "shell.h"
@@ -44,6 +45,10 @@ void kmain(uint32_t magic, uint32_t addr) {
 	/* Initialize keyboard */
 	keyboard_init();
 	vga_write_string("Keyboard initialized\n");
+
+	/* Initialize disk subsystem */
+	disk_init();
+	vga_write_string("Disk subsystem initialized\n");
 
 	/* Enable interrupts */
 	__asm__ volatile("sti");

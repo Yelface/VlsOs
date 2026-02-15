@@ -23,6 +23,22 @@ inb:
 	movzx eax, al         ; Zero-extend al to eax
 	ret
 
+; void outw(uint16_t port, uint16_t value)
+global outw
+outw:
+	mov dx, [esp + 4]     ; Get port from first argument
+	mov ax, [esp + 8]     ; Get value from second argument
+	out dx, ax
+	ret
+
+; uint16_t inw(uint16_t port)
+global inw
+inw:
+	mov dx, [esp + 4]     ; Get port from first argument
+	in ax, dx             ; Read word from port
+	movzx eax, ax         ; Zero-extend ax to eax
+	ret
+
 ; Forward declarations
 extern isr_handler
 extern irq_handler

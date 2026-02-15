@@ -1,6 +1,7 @@
 #include "drivers.h"
 #include "string.h"
 #include "types.h"
+#include "disk.h"
 #include "net.h"
 #include "socket.h"
 #include "http.h"
@@ -299,6 +300,111 @@ int cmd_wget(int argc, char** argv) {
 	}
 
 	return 0;
+}
+
+/* Disk command */
+int cmd_disk(int argc, char** argv) {
+	if (argc < 2) {
+		vga_write_string("Usage: disk info|read|write\n");
+		vga_write_string("  disk info              - Show disk information\n");
+		vga_write_string("  disk read <drive> <lba> - Read sector from disk\n");
+		return 1;
+	}
+
+	if (strcmp(argv[1], "info") == 0) {
+		uint8_t drive_count = disk_get_drive_count();
+		vga_write_string("Disk subsystem: ");
+		char buf[32];
+		itoa(drive_count, buf, 10);
+		vga_write_string(buf);
+		vga_write_string(" drive(s) detected\n\n");
+
+		for (uint8_t i = 0; i < 4; i++) {
+			if (disk_drive_exists(i)) {
+				ata_disk_t* disk = disk_get_info(i);
+				if (disk) {
+					vga_write_string("Drive ");
+					itoa(i, buf, 10);
+					vga_write_string(buf);
+					vga_write_string(":\n");
+					vga_write_string("  Model: ");
+					vga_write_string(disk->model);
+					vga_write_string("\n");
+					vga_write_string("  Cylinders: ");
+					itoa(disk->cylinders, buf, 10);
+					vga_write_string(buf);
+					vga_write_string("  Heads: ");
+					itoa(disk->heads, buf, 10);
+					vga_write_string(buf);
+					vga_write_string("  Sectors/track: ");
+					itoa(disk->sectors, buf, 10);
+					vga_write_string(buf);
+					vga_write_string("\n");
+					vga_write_string("  Total sectors: ");
+					itoa(disk->total_sectors, buf, 10);
+					vga_write_string(buf);
+					vga_write_string("  (");
+					uint32_t mb = (disk->total_sectors * 512) / (1024 * 1024);
+					itoa(mb, buf, 10);
+					vga_write_string(buf);
+					vga_write_string(" MB)\n\n");
+				}
+			}
+		}
+		return 0;
+	} else if (strcmp(argv[1], "read") == 0) {
+		if (argc < 4) {
+			vga_write_string("Usage: disk read <drive> <lba>\n");
+			return 1;
+		}
+		
+		uint8_t drive = (uint8_t)atoi(argv[2]);
+		uint32_t lba = (uint32_t)atoi(argv[3]);
+		
+		if (!disk_drive_exists(drive)) {
+			vga_write_string("Drive not found\n");
+			return 1;
+		}
+
+		uint8_t buffer[512];
+		int result = disk_read_sector(drive, lba, buffer);
+		if (result < 0) {
+			vga_write_string("Read failed\n");
+			return 1;
+		}
+
+		vga_write_string("Sector 0x");
+		char buf[32];
+		itoa(lba, buf, 16);
+		vga_write_string(buf);
+		vga_write_string(" (");
+		itoa(lba, buf, 10);
+		vga_write_string(buf);
+		vga_write_string("):\n");
+
+		/* Display first 256 bytes */
+		for (int i = 0; i < 256; i++) {
+			if (i % 16 == 0) {
+				vga_write_string("\n0x");
+				itoa(i, buf, 16);
+				vga_write_string(buf);
+				vga_write_string(": ");
+			}
+			uint8_t byte = buffer[i];
+			if (byte < 16) vga_write_char('0');
+			itoa(byte, buf, 16);
+			vga_write_string(buf);
+			vga_write_char(' ');
+		}
+		vga_write_string("\n");
+		return 0;
+	} else if (strcmp(argv[1], "write") == 0) {
+		vga_write_string("Write command not implemented\n");
+		return 1;
+	} else {
+		vga_write_string("Unknown disk command\n");
+		return 1;
+	}
 }
 
 /* UI command */
