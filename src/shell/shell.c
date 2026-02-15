@@ -32,6 +32,8 @@ extern int cmd_dns(int argc, char** argv);
 extern int cmd_dhcp(int argc, char** argv);
 extern int cmd_wget(int argc, char** argv);
 extern int cmd_disk(int argc, char** argv);
+extern int cmd_ps(int argc, char** argv);
+extern int cmd_kill(int argc, char** argv);
 extern int cmd_ui(int argc, char** argv);
 static int cmd_clear(int argc, char** argv);
 static int cmd_uptime(int argc, char** argv);
@@ -57,6 +59,8 @@ static struct command commands[] = {
 	{"dhcp",     cmd_dhcp,      "DHCP server control (start|stop|status)"},
 	{"wget",     cmd_wget,      "HTTP client (fetch and display web pages)"},
 	{"disk",     cmd_disk,      "Disk operations (info|read|write)"},
+	{"ps",       cmd_ps,        "List running processes"},
+	{"kill",     cmd_kill,      "Terminate a process (kill <pid>)"},
 	{"ui",       cmd_ui,        "Enhanced UI control (on|off|status)"},
 	{NULL,       NULL,          NULL}
 };

@@ -1,6 +1,7 @@
 #include "kernel.h"
 #include "drivers.h"
 #include "disk.h"
+#include "process.h"
 #include "memory.h"
 #include "types.h"
 #include "shell.h"
@@ -37,6 +38,10 @@ void kmain(uint32_t magic, uint32_t addr) {
 	/* Initialize interrupt descriptor table */
 	idt_init();
 	vga_write_string("Interrupt handler initialized\n");
+
+	/* Initialize process manager */
+	process_init();
+	vga_write_string("Process manager initialized\n");
 
 	/* Initialize timer */
 	pit_init(1000);  /* 1000 Hz */

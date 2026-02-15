@@ -2,6 +2,7 @@
 #include "string.h"
 #include "types.h"
 #include "disk.h"
+#include "process.h"
 #include "net.h"
 #include "socket.h"
 #include "http.h"
@@ -427,6 +428,50 @@ int cmd_ui(int argc, char** argv) {
 		vga_write_string(g_ui_state.enabled ? "ON\n" : "OFF\n");
 	} else {
 		vga_write_string("Unknown ui command\n");
+		return 1;
+	}
+
+	return 0;
+}
+
+/* Process list command */
+int cmd_ps(int argc, char** argv) {
+	(void)argc;
+	(void)argv;
+	
+	process_display_info();
+	return 0;
+}
+
+/* Kill process command */
+int cmd_kill(int argc, char** argv) {
+	if (argc < 2) {
+		vga_write_string("Usage: kill <pid>\n");
+		return 1;
+	}
+
+	uint32_t pid = (uint32_t)atoi(argv[1]);
+	
+	if (pid == 0) {
+		vga_write_string("Cannot kill kernel process\n");
+		return 1;
+	}
+
+	process_t* proc = process_get(pid);
+	if (!proc) {
+		vga_write_string("Process not found\n");
+		return 1;
+	}
+
+	char buf[32];
+	int result = process_kill(pid);
+	if (result == 0) {
+		vga_write_string("Killed process ");
+		itoa(pid, buf, 10);
+		vga_write_string(buf);
+		vga_write_string("\n");
+	} else {
+		vga_write_string("Failed to kill process\n");
 		return 1;
 	}
 

@@ -5,6 +5,9 @@
 extern void outb(uint16_t port, uint8_t value);
 extern uint8_t inb(uint16_t port);
 
+/* Forward declaration of process scheduler */
+extern void process_tick(void);
+
 /* Programmable Interval Timer (PIT) driver
  * Uses Intel 8253/8254 PIT chip
  * IRQ 0, I/O ports 0x40-0x43
@@ -22,6 +25,8 @@ static uint32_t ticks = 0;
 /* PIT interrupt handler */
 void pit_irq0_handler(void) {
 	ticks++;
+	/* Call process scheduler */
+	process_tick();
 	/* Send EOI to PIC */
 	outb(0x20, 0x20);
 }
