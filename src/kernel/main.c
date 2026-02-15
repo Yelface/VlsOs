@@ -2,6 +2,8 @@
 #include "drivers.h"
 #include "disk.h"
 #include "process.h"
+#include "filesystem.h"
+#include "ipc.h"
 #include "memory.h"
 #include "types.h"
 #include "shell.h"
@@ -54,6 +56,14 @@ void kmain(uint32_t magic, uint32_t addr) {
 	/* Initialize disk subsystem */
 	disk_init();
 	vga_write_string("Disk subsystem initialized\n");
+
+	/* Initialize file system */
+	fs_init();
+	vga_write_string("File system initialized\n");
+
+	/* Initialize IPC subsystem */
+	ipc_init();
+	vga_write_string("IPC subsystem initialized\n");
 
 	/* Enable interrupts */
 	__asm__ volatile("sti");

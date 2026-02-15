@@ -34,11 +34,14 @@ extern int cmd_wget(int argc, char** argv);
 extern int cmd_disk(int argc, char** argv);
 extern int cmd_ps(int argc, char** argv);
 extern int cmd_kill(int argc, char** argv);
+extern int cmd_ls(int argc, char** argv);
+extern int cmd_cat(int argc, char** argv);
+extern int cmd_file(int argc, char** argv);
+extern int cmd_pipe(int argc, char** argv);
 extern int cmd_ui(int argc, char** argv);
 static int cmd_clear(int argc, char** argv);
 static int cmd_uptime(int argc, char** argv);
 static int cmd_exit(int argc, char** argv);
-static int cmd_ls(int argc, char** argv);
 static int cmd_search(int argc, char** argv);
 
 /* Command table */
@@ -47,7 +50,6 @@ static struct command commands[] = {
 	{"echo",     cmd_echo,      "Echo arguments to display"},
 	{"clear",    cmd_clear,     "Clear the screen"},
 	{"uptime",   cmd_uptime,    "Show system uptime"},
-	{"ls",       cmd_ls,        "List files (simulation)"},
 	{"exit",     cmd_exit,      "Exit the shell"},
 	{"ifconfig", cmd_ifconfig,  "Show network interface configuration"},
 	{"ping",     cmd_ping,      "Send ICMP echo request (ping)"},
@@ -61,6 +63,10 @@ static struct command commands[] = {
 	{"disk",     cmd_disk,      "Disk operations (info|read|write)"},
 	{"ps",       cmd_ps,        "List running processes"},
 	{"kill",     cmd_kill,      "Terminate a process (kill <pid>)"},
+	{"ls",       cmd_ls,        "List directory contents"},
+	{"cat",      cmd_cat,       "Display file contents (cat <file>)"},
+	{"file",     cmd_file,      "Show file information (file <file>)"},
+	{"pipe",     cmd_pipe,      "Test pipe/IPC functionality"},
 	{"ui",       cmd_ui,        "Enhanced UI control (on|off|status)"},
 	{NULL,       NULL,          NULL}
 };
@@ -126,18 +132,6 @@ static int cmd_exit(int argc, char** argv) {
 }
 
 /* Command: ls */
-static int cmd_ls(int argc, char** argv) {
-	(void) argc;
-	(void) argv;
-
-	vga_write_string("(No filesystem yet - simulation only)\n");
-	vga_write_string("boot/\n");
-	vga_write_string("kernel/\n");
-	vga_write_string("bin/\n");
-
-	return 0;
-}
-
 /* Parse command line into argc/argv */
 static int parse_command(const char* line, char** argv, int max_args) {
 	int argc = 0;

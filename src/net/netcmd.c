@@ -3,6 +3,8 @@
 #include "types.h"
 #include "disk.h"
 #include "process.h"
+#include "filesystem.h"
+#include "ipc.h"
 #include "net.h"
 #include "socket.h"
 #include "http.h"
@@ -406,6 +408,167 @@ int cmd_disk(int argc, char** argv) {
 		vga_write_string("Unknown disk command\n");
 		return 1;
 	}
+}
+
+/* List directory command */
+int cmd_ls(int argc, char** argv) {
+	(void)argc;
+	(void)argv;
+
+	fs_dir_info_t entries[FS_ROOT_ENTRIES];
+	int count = fs_list_dir("", entries, FS_ROOT_ENTRIES);
+
+	if (count < 0) {
+		vga_write_string("Failed to list directory\n");
+		return 1;
+	}
+
+	char buf[32];
+	vga_write_string("NAME             SIZE      ATTR\n");
+	vga_write_string("================ ========= ======\n");
+
+	for (int i = 0; i < count; i++) {
+		/* Name */
+		vga_write_string(entries[i].filename);
+		for (int j = strlen(entries[i].filename); j < 16; j++) {
+			vga_write_char(' ');
+		}
+
+		/* Size */
+		itoa(entries[i].file_size, buf, 10);
+		vga_write_string(buf);
+		for (int j = strlen(buf); j < 9; j++) {
+			vga_write_char(' ');
+		}
+
+		/* Attributes */
+		if (entries[i].attributes & FS_ATTR_DIRECTORY) {
+			vga_write_string("<DIR>");
+		} else {
+			vga_write_string("-");
+		}
+		vga_write_char('\n');
+	}
+
+	vga_write_string("\nTotal: ");
+	itoa(count, buf, 10);
+	vga_write_string(buf);
+	vga_write_string(" entries\n");
+
+	return 0;
+}
+
+/* Display file command */
+int cmd_cat(int argc, char** argv) {
+	if (argc < 2) {
+		vga_write_string("Usage: cat <filename>\n");
+		return 1;
+	}
+
+	if (!fs_file_exists(argv[1])) {
+		vga_write_string("File not found: ");
+		vga_write_string(argv[1]);
+		vga_write_char('\n');
+		return 1;
+	}
+
+	int fd = fs_open(argv[1], 0);
+	if (fd < 0) {
+		vga_write_string("Failed to open file\n");
+		return 1;
+	}
+
+	uint8_t buffer[256];
+	int bytes_read;
+
+	while ((bytes_read = fs_read(fd, buffer, sizeof(buffer))) > 0) {
+		for (int i = 0; i < bytes_read; i++) {
+			vga_write_char((char)buffer[i]);
+		}
+	}
+
+	fs_close(fd);
+	vga_write_char('\n');
+	return 0;
+}
+
+/* File information command */
+int cmd_file(int argc, char** argv) {
+	if (argc < 2) {
+		vga_write_string("Usage: file <filename>\n");
+		return 1;
+	}
+
+	fs_dir_info_t info;
+	if (fs_get_file_info(argv[1], &info) < 0) {
+		vga_write_string("File not found\n");
+		return 1;
+	}
+
+	char buf[32];
+	vga_write_string("File: ");
+	vga_write_string(info.filename);
+	vga_write_char('\n');
+	
+	vga_write_string("Size: ");
+	itoa(info.file_size, buf, 10);
+	vga_write_string(buf);
+	vga_write_string(" bytes\n");
+	
+	vga_write_string("Start cluster: ");
+	itoa(info.start_cluster, buf, 10);
+	vga_write_string(buf);
+	vga_write_char('\n');
+	
+	vga_write_string("Attributes: ");
+	itoa(info.attributes, buf, 16);
+	vga_write_string(buf);
+	vga_write_char('\n');
+
+	return 0;
+}
+
+/* Pipe test command */
+int cmd_pipe(int argc, char** argv) {
+	(void)argc;
+	(void)argv;
+
+	vga_write_string("Creating pipe...\n");
+	int pipe_id = ipc_pipe_create();
+
+	if (pipe_id < 0) {
+		vga_write_string("Failed to create pipe\n");
+		return 1;
+	}
+
+	char buf[32];
+	vga_write_string("Pipe created: ID=");
+	itoa(pipe_id, buf, 10);
+	vga_write_string(buf);
+	vga_write_char('\n');
+
+	/* Test write */
+	vga_write_string("Writing test message...\n");
+	ipc_pipe_write(pipe_id, 0x12345678);
+	ipc_pipe_write(pipe_id, 0xDEADBEEF);
+
+	/* Test read */
+	uint32_t msg1, msg2;
+	ipc_pipe_read(pipe_id, &msg1);
+	ipc_pipe_read(pipe_id, &msg2);
+
+	vga_write_string("Read from pipe: 0x");
+	itoa(msg1, buf, 16);
+	vga_write_string(buf);
+	vga_write_string(" and 0x");
+	itoa(msg2, buf, 16);
+	vga_write_string(buf);
+	vga_write_char('\n');
+
+	ipc_pipe_close(pipe_id);
+	vga_write_string("Pipe closed\n");
+
+	return 0;
 }
 
 /* UI command */

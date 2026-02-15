@@ -34,6 +34,8 @@ KERNEL_SOURCES = \
 	src/kernel/idt.c \
 	src/kernel/disk.c \
 	src/kernel/process.c \
+	src/kernel/filesystem.c \
+	src/kernel/ipc.c \
 	src/libc/string.c \
 	src/shell/shell.c \
 	src/utils/syscall.c \
@@ -82,7 +84,7 @@ $(BUILD_DIR)/interrupts.o: src/kernel/interrupts.asm | $(BUILD_DIR)
 $(KERNEL): $(BUILD_DIR)/multiboot.o $(BUILD_DIR)/interrupts.o \
            $(BUILD_DIR)/main.o $(BUILD_DIR)/vga.o $(BUILD_DIR)/keyboard.o \
            $(BUILD_DIR)/pit.o $(BUILD_DIR)/memory.o $(BUILD_DIR)/idt.o \
-           $(BUILD_DIR)/disk.o $(BUILD_DIR)/process.o $(BUILD_DIR)/string.o $(BUILD_DIR)/shell.o $(BUILD_DIR)/syscall.o \
+           $(BUILD_DIR)/disk.o $(BUILD_DIR)/process.o $(BUILD_DIR)/filesystem.o $(BUILD_DIR)/ipc.o $(BUILD_DIR)/string.o $(BUILD_DIR)/shell.o $(BUILD_DIR)/syscall.o \
            $(BUILD_DIR)/net.o $(BUILD_DIR)/arp.o $(BUILD_DIR)/ip.o \
            $(BUILD_DIR)/icmp.o $(BUILD_DIR)/udp.o $(BUILD_DIR)/tcp.o \
 $(BUILD_DIR)/netdrv.o $(BUILD_DIR)/socket.o $(BUILD_DIR)/netcmd.o $(BUILD_DIR)/http.o $(BUILD_DIR)/dns.o $(BUILD_DIR)/dhcp.o $(BUILD_DIR)/http_client.o $(BUILD_DIR)/ui.o
